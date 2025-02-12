@@ -1,86 +1,287 @@
 # Developer Evaluation Project
 
-`READ CAREFULLY`
-
-## Instructions
-**The test below will have up to 7 calendar days to be delivered from the date of receipt of this manual.**
-
-- The code must be versioned in a public Github repository and a link must be sent for evaluation once completed
-- Upload this template to your repository and start working from it
-- Read the instructions carefully and make sure all requirements are being addressed
-- The repository must provide instructions on how to configure, execute and test the project
-- Documentation and overall organization will also be taken into consideration
+**Thiago Augusto Borges**
+<br/>
+Disponível em [GitHub](https://github.com/Wenemy/thiago-borges-developer-evaluation)
 
 ## Use Case
-**You are a developer on the DeveloperStore team. Now we need to implement the API prototypes.**
+**DeveloperStore Team - Sale API**
 
-As we work with `DDD`, to reference entities from other domains, we use the `External Identities` pattern with denormalization of entity descriptions.
+### Sale API Fields
 
-Therefore, you will write an API (complete CRUD) that handles sales records. The API needs to be able to inform:
+| Field           | Type               | Description                                                                 |
+|-----------------|--------------------|---------------------------------------------------------------------------|
+| **`saleNumber`** | `string`           | Número único da venda.                                                    |
+| **`saleDate`**   | `string (date-time)`| Data e hora da venda.                                                     |
+| **`customer`**   | `object`           | Informações do cliente.                                                   |
+| → `customerId`   | `string (UUID)`    | Identificador único do cliente (External Identity).                        |
+| → `name`         | `string`           | Nome do cliente (denormalizado).                                          |
+| → `email`        | `string`           | E-mail do cliente (denormalizado).                                        |
+| **`branch`**     | `object`           | Informações da filial.                                                    |
+| → `branchId`     | `string (UUID)`    | Identificador único da filial (External Identity).                         |
+| → `name`         | `string`           | Nome da filial (denormalizado).                                           |
+| → `address`      | `string`           | Endereço da filial (denormalizado).                                       |
+| **`items`**      | `array`            | Lista de itens da venda.                                                  |
+| → `productId`    | `string (UUID)`    | Identificador único do produto (External Identity).                        |
+| → `quantity`     | `integer`          | Quantidade do produto.                                                    |
+| → `unitPrice`    | `number`           | Preço unitário do produto.                                                |
+| → `discount`     | `number`           | Desconto aplicado ao item (calculado com base nas regras de negócio).      |
+| → `totalAmount`  | `number`           | Valor total do item (`quantity * unitPrice - discount`).                   |
+| **`totalAmount`**| `number`           | Valor total da venda (soma dos valores dos itens).                         |
+| **`isCancelled`**| `boolean`          | Indica se a venda foi cancelada.                                          |
 
-* Sale number
-* Date when the sale was made
-* Customer
-* Total sale amount
-* Branch where the sale was made
-* Products
-* Quantities
-* Unit prices
-* Discounts
-* Total amount for each item
-* Cancelled/Not Cancelled
+---
 
-It's not mandatory, but it would be a differential to build code for publishing events of:
-* SaleCreated
-* SaleModified
-* SaleCancelled
-* ItemCancelled
+### Observações
 
-If you write the code, **it's not required** to actually publish to any Message Broker. You can log a message in the application log or however you find most convenient.
+1. **External Identities**:
+   - `customerId`, `branchId` e `productId` são identificadores externos, referenciando entidades de outros domínios.
 
-### Business Rules
+2. **Denormalização**:
+   - Campos como `customer.name`, `customer.email`, `branch.name` e `branch.address` são denormalizados.
 
-* Purchases above 4 identical items have a 10% discount
-* Purchases between 10 and 20 identical items have a 20% discount
-* It's not possible to sell above 20 identical items
-* Purchases below 4 items cannot have a discount
+3. **Regras de Negócio**:
+   - Descontos são aplicados automaticamente com base na quantidade de itens:
+     - **4+ itens**: 10% de desconto.
+     - **10-20 itens**: 20% de desconto.
+     - **Mais de 20 itens**: Não permitido (lança uma exceção).
+   - O valor total de cada item (`totalAmount`) é calculado como `quantity * unitPrice - discount`.
 
-These business rules define quantity-based discounting tiers and limitations:
+4. **Cancelamento de Venda**:
+   - Uma venda pode ser cancelada por meio do endpoint `PATCH /sales/{id}/cancel`.
+   - O campo `isCancelled` é atualizado para `true` quando uma venda é cancelada.
 
-1. Discount Tiers:
-   - 4+ items: 10% discount
-   - 10-20 items: 20% discount
+5. **Paginação e Ordenação**:
+   - O endpoint `GET /sales` suporta paginação e ordenação:
+     - `_page`: Número da página (padrão: 1).
+     - `_size`: Número de itens por página (padrão: 10).
+     - `_order`: Ordenação dos resultados (exemplo: `saleNumber desc, saleDate asc`).
 
-2. Restrictions:
-   - Maximum limit: 20 items per product
-   - No discounts allowed for quantities below 4 items
+6. **Validações**:
+   - Todos os campos obrigatórios são validados antes de processar a requisição.
+   - Quantidades inválidas (ex.: acima de 20 itens) resultam em erro.
 
-## Overview
-This section provides a high-level overview of the project and the various skills and competencies it aims to assess for developer candidates. 
+---
 
-See [Overview](/.doc/overview.md)
+### Sales
 
-## Tech Stack
-This section lists the key technologies used in the project, including the backend, testing, frontend, and database components. 
+#### GET /sales
+- Description: Retrieve a list of all sales
+- Query Parameters:
+  - `_page` (optional): Page number for pagination (default: 1)
+  - `_size` (optional): Number of items per page (default: 10)
+  - `_order` (optional): Ordering of results (e.g., "saleNumber desc, saleDate asc")
+- Response: 
+  ```json
+  {
+  "data": [
+    {
+      "id": "string (UUID)",
+      "saleNumber": "string",
+      "saleDate": "string (date-time)",
+      "customer": {
+        "customerId": "string (UUID)",
+        "name": "string",
+        "email": "string"
+      },
+      "branch": {
+        "branchId": "string (UUID)",
+        "name": "string",
+        "address": "string"
+      },
+      "items": [
+        {
+          "productId": "string (UUID)",
+          "quantity": "integer",
+          "unitPrice": "number",
+          "discount": "number",
+          "totalAmount": "number"
+        }
+      ],
+      "totalAmount": "number",
+      "isCancelled": "boolean"
+    }
+  ],
+  "totalItems": "integer",
+  "currentPage": "integer",
+  "totalPages": "integer"
+  }
+  ```
 
-See [Tech Stack](/.doc/tech-stack.md)
 
-## Frameworks
-This section outlines the frameworks and libraries that are leveraged in the project to enhance development productivity and maintainability. 
+#### POST /sales
+- Description: Create a new sale
+- Request Body:
+  ```json
+  {
+  "saleNumber": "string",
+  "saleDate": "string (date-time)",
+  "customerId": "string (UUID)",
+  "branchId": "string (UUID)",
+  "items": [
+      {
+         "productId": "string (UUID)",
+         "quantity": "integer",
+         "unitPrice": "number"
+      }
+    ]
+  }
+  ```
+- Response: 
+  ```json
+  {
+   "id": "string (UUID)",
+   "saleNumber": "string",
+   "saleDate": "string (date-time)",
+   "customer": {
+      "customerId": "string (UUID)",
+      "name": "string",
+      "email": "string"
+   },
+   "branch": {
+      "branchId": "string (UUID)",
+      "name": "string",
+      "address": "string"
+   },
+   "items": [
+      {
+         "productId": "string (UUID)",
+         "quantity": "integer",
+         "unitPrice": "number",
+         "discount": "number",
+         "totalAmount": "number"
+      }
+   ],
+   "totalAmount": "number",
+   "isCancelled": "boolean"
+  }
+  ```
 
-See [Frameworks](/.doc/frameworks.md)
+#### GET /sales/{id}
+- Description: Retrieve a specific sale by ID
+- Path Parameters:
+  - `id`: Sale ID (UUID)
+- Response: 
+  ```json
+  {
+   "id": "string (UUID)",
+   "saleNumber": "string",
+   "saleDate": "string (date-time)",
+   "customer": {
+      "customerId": "string (UUID)",
+      "name": "string",
+      "email": "string"
+   },
+   "branch": {
+      "branchId": "string (UUID)",
+      "name": "string",
+      "address": "string"
+   },
+   "items": [
+      {
+         "productId": "string (UUID)",
+         "quantity": "integer",
+         "unitPrice": "number",
+         "discount": "number",
+         "totalAmount": "number"
+      }
+   ],
+   "totalAmount": "number",
+   "isCancelled": "boolean"
+  }
+  ```
 
-<!-- 
-## API Structure
-This section includes links to the detailed documentation for the different API resources:
-- [API General](./docs/general-api.md)
-- [Products API](/.doc/products-api.md)
-- [Carts API](/.doc/carts-api.md)
-- [Users API](/.doc/users-api.md)
-- [Auth API](/.doc/auth-api.md)
--->
+#### PUT /sales/{id}
+- Description: Update a specific sale
+- Path Parameters:
+  - `id`: Sale ID (UUID)
+- Request Body:
+  ```json
+  {
+   "saleNumber": "string",
+   "saleDate": "string (date-time)",
+   "customerId": "string (UUID)",
+   "branchId": "string (UUID)",
+   "items": [
+         {
+            "productId": "string (UUID)",
+            "quantity": "integer",
+            "unitPrice": "number"
+         }
+      ]
+   }
+  ```
+- Response: 
+  ```json
+  {
+   "id": "string (UUID)",
+   "saleNumber": "string",
+   "saleDate": "string (date-time)",
+   "customer": {
+      "customerId": "string (UUID)",
+      "name": "string",
+      "email": "string"
+   },
+   "branch": {
+      "branchId": "string (UUID)",
+      "name": "string",
+      "address": "string"
+   },
+   "items": [
+      {
+         "productId": "string (UUID)",
+         "quantity": "integer",
+         "unitPrice": "number",
+         "discount": "number",
+         "totalAmount": "number"
+      }
+   ],
+   "totalAmount": "number",
+   "isCancelled": "boolean"
+   }
+  ```
 
-## Project Structure
-This section describes the overall structure and organization of the project files and directories. 
+#### DELETE /sales/{id}
+- Description: Delete a specific sale
+- Path Parameters:
+  - `id`: Sale ID (UUID)
+- Response: 
+  ```json
+  {
+    "message": "string"
+  }
+  ```
 
-See [Project Structure](/.doc/project-structure.md)
+#### PATCH /sales/{id}/cancel
+- Description: Cancel a specific sale
+- Path Parameters:
+  - `id`: Sale ID (UUID)
+- Response: 
+  ```json
+  {
+   "id": "string (UUID)",
+   "saleNumber": "string",
+   "saleDate": "string (date-time)",
+   "customer": {
+      "customerId": "string (UUID)",
+      "name": "string",
+      "email": "string"
+   },
+   "branch": {
+      "branchId": "string (UUID)",
+      "name": "string",
+      "address": "string"
+   },
+   "items": [
+      {
+         "productId": "string (UUID)",
+         "quantity": "integer",
+         "unitPrice": "number",
+         "discount": "number",
+         "totalAmount": "number"
+      }
+   ],
+   "totalAmount": "number",
+   "isCancelled": "boolean"
+  }
+  ```
