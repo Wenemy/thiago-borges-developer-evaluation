@@ -32,6 +32,8 @@ Disponível em [GitHub](https://github.com/Wenemy/thiago-borges-developer-evalua
 
 ---
 
+![SalesAPI](SalesAPI.png)
+
 ### Observações
 
 1. **External Identities**:
@@ -53,9 +55,8 @@ Disponível em [GitHub](https://github.com/Wenemy/thiago-borges-developer-evalua
 
 5. **Paginação e Ordenação**:
    - O endpoint `GET /sales` suporta paginação e ordenação:
-     - `_page`: Número da página (padrão: 1).
-     - `_size`: Número de itens por página (padrão: 10).
-     - `_order`: Ordenação dos resultados (exemplo: `saleNumber desc, saleDate asc`).
+     - `Page`: Número da página (padrão: 1).
+     - `PageSize`: Número de itens por página (padrão: 10).
 
 6. **Validações**:
    - Todos os campos obrigatórios são validados antes de processar a requisição.
@@ -68,13 +69,13 @@ Disponível em [GitHub](https://github.com/Wenemy/thiago-borges-developer-evalua
 #### GET /sales
 - Description: Retrieve a list of all sales
 - Query Parameters:
-  - `_page` (optional): Page number for pagination (default: 1)
-  - `_size` (optional): Number of items per page (default: 10)
-  - `_order` (optional): Ordering of results (e.g., "saleNumber desc, saleDate asc")
+  - `Page` (optional): Page number for pagination (default: 1)
+  - `PageSize` (optional): Number of items per page (default: 10)
+  - `Filters` (optional): Ordering of results (e.g., "saleNumber, saleDate")
 - Response: 
   ```json
   {
-  "data": [
+  "items": [
     {
       "id": "string (UUID)",
       "saleNumber": "string",
@@ -94,9 +95,9 @@ Disponível em [GitHub](https://github.com/Wenemy/thiago-borges-developer-evalua
       "isCancelled": "boolean"
     }
   ],
-  "totalItems": "integer",
-  "currentPage": "integer",
-  "totalPages": "integer"
+  "page": "integer",
+  "pageSize": "integer",
+  "totalCount": "integer"
   }
   ```
 
