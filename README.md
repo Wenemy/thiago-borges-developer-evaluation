@@ -25,7 +25,7 @@ Disponível em [GitHub](https://github.com/Wenemy/thiago-borges-developer-evalua
 | → `productId`    | `string (UUID)`    | Identificador único do produto (External Identity).                        |
 | → `quantity`     | `integer`          | Quantidade do produto.                                                    |
 | → `unitPrice`    | `number`           | Preço unitário do produto.                                                |
-| → `discount`     | `number`           | Desconto aplicado ao item (calculado com base nas regras de negócio).      |
+| → `discount`     | `number`           | Desconto aplicado ao item .                                               |
 | → `totalAmount`  | `number`           | Valor total do item (`quantity * unitPrice - discount`).                   |
 | **`totalAmount`**| `number`           | Valor total da venda (soma dos valores dos itens).                         |
 | **`isCancelled`**| `boolean`          | Indica se a venda foi cancelada.                                          |
@@ -38,7 +38,7 @@ Disponível em [GitHub](https://github.com/Wenemy/thiago-borges-developer-evalua
    - `customerId`, `branchId` e `productId` são identificadores externos, referenciando entidades de outros domínios.
 
 2. **Denormalização**:
-   - Campos como `customer.name`, `customer.email`, `branch.name` e `branch.address` são denormalizados.
+   - Campos como `customer.name`, `branch.name` e `branch.address` são denormalizados.
 
 3. **Regras de Negócio**:
    - Descontos são aplicados automaticamente com base na quantidade de itens:
@@ -79,16 +79,8 @@ Disponível em [GitHub](https://github.com/Wenemy/thiago-borges-developer-evalua
       "id": "string (UUID)",
       "saleNumber": "string",
       "saleDate": "string (date-time)",
-      "customer": {
-        "customerId": "string (UUID)",
-        "name": "string",
-        "email": "string"
-      },
-      "branch": {
-        "branchId": "string (UUID)",
-        "name": "string",
-        "address": "string"
-      },
+      "customerId": "string (UUID)",
+      "branchId": "string (UUID)",
       "items": [
         {
           "productId": "string (UUID)",
@@ -133,16 +125,8 @@ Disponível em [GitHub](https://github.com/Wenemy/thiago-borges-developer-evalua
    "id": "string (UUID)",
    "saleNumber": "string",
    "saleDate": "string (date-time)",
-   "customer": {
-      "customerId": "string (UUID)",
-      "name": "string",
-      "email": "string"
-   },
-   "branch": {
-      "branchId": "string (UUID)",
-      "name": "string",
-      "address": "string"
-   },
+   "customerId": "string (UUID)",
+   "branchId": "string (UUID)",
    "items": [
       {
          "productId": "string (UUID)",
@@ -167,16 +151,8 @@ Disponível em [GitHub](https://github.com/Wenemy/thiago-borges-developer-evalua
    "id": "string (UUID)",
    "saleNumber": "string",
    "saleDate": "string (date-time)",
-   "customer": {
-      "customerId": "string (UUID)",
-      "name": "string",
-      "email": "string"
-   },
-   "branch": {
-      "branchId": "string (UUID)",
-      "name": "string",
-      "address": "string"
-   },
+   "customerId": "string (UUID)",
+   "branchId": "string (UUID)",
    "items": [
       {
          "productId": "string (UUID)",
@@ -217,16 +193,8 @@ Disponível em [GitHub](https://github.com/Wenemy/thiago-borges-developer-evalua
    "id": "string (UUID)",
    "saleNumber": "string",
    "saleDate": "string (date-time)",
-   "customer": {
-      "customerId": "string (UUID)",
-      "name": "string",
-      "email": "string"
-   },
-   "branch": {
-      "branchId": "string (UUID)",
-      "name": "string",
-      "address": "string"
-   },
+   "customerId": "string (UUID)",
+   "branchId": "string (UUID)",
    "items": [
       {
          "productId": "string (UUID)",
@@ -262,16 +230,8 @@ Disponível em [GitHub](https://github.com/Wenemy/thiago-borges-developer-evalua
    "id": "string (UUID)",
    "saleNumber": "string",
    "saleDate": "string (date-time)",
-   "customer": {
-      "customerId": "string (UUID)",
-      "name": "string",
-      "email": "string"
-   },
-   "branch": {
-      "branchId": "string (UUID)",
-      "name": "string",
-      "address": "string"
-   },
+   "customerId": "string (UUID)",
+   "branchId": "string (UUID)",
    "items": [
       {
          "productId": "string (UUID)",
