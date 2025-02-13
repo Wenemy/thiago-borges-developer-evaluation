@@ -40,8 +40,6 @@ public class Program
 
             builder.RegisterDependencies();
 
-            builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(ApplicationLayer).Assembly);
-
             builder.Services.AddMediatR(cfg =>
             {
                 cfg.RegisterServicesFromAssemblies(
@@ -51,6 +49,8 @@ public class Program
             });
 
             builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+
+            builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(ApplicationLayer).Assembly);
 
             var app = builder.Build();
             app.UseMiddleware<ValidationExceptionMiddleware>();
@@ -68,9 +68,11 @@ public class Program
 
             app.UseBasicHealthChecks();
 
+
             app.MapControllers();
 
             app.Run();
+
         }
         catch (Exception ex)
         {

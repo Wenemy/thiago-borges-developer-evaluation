@@ -227,21 +227,6 @@ Disponível em [GitHub](https://github.com/Wenemy/thiago-borges-developer-evalua
 - Response: 
   ```json
   {
-   "id": "string (UUID)",
-   "saleNumber": "string",
-   "saleDate": "string (date-time)",
-   "customerId": "string (UUID)",
-   "branchId": "string (UUID)",
-   "items": [
-      {
-         "productId": "string (UUID)",
-         "quantity": "integer",
-         "unitPrice": "number",
-         "discount": "number",
-         "totalAmount": "number"
-      }
-   ],
-   "totalAmount": "number",
-   "isCancelled": "boolean"
+    "message": "string"
   }
   ```

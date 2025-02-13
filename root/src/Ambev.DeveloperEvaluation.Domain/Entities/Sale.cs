@@ -38,7 +38,7 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
 
         public void AddItem(Product product, int quantity, decimal unitPrice)
         {
-            var existingItem = Items.FirstOrDefault(i => i.Product.ProductId == product.ProductId);
+            var existingItem = Items.FirstOrDefault(i => i.ProductId == product.ProductId);
 
             if (existingItem != null)
             {
@@ -66,6 +66,11 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
             {
                 Items.Remove(itemToRemove);
             }
+        }
+
+        public void ClearItems()
+        {
+            Items.Clear();
         }
 
         public decimal TotalAmount => Items.Sum(i => i.TotalAmount);
