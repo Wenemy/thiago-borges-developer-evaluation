@@ -3,6 +3,13 @@
 **Thiago Augusto Borges**
 <br/>
 Disponível em [GitHub](https://github.com/Wenemy/thiago-borges-developer-evaluation)
+<br/>
+
+# Para executar
+<p>Alterar sua ConnectionString no appsettings.json</p>
+<p>Rodar a migration 20250213053121_SaleV2Migration ou gerar uma nova</p>
+<p><code>dotnet ef database update</code></p>
+<p>Executar o projeto <pre>Ambev.DeveloperEvaluation.WebApi</pre></p>
 
 ## Use Case
 **DeveloperStore Team - Sale API**
