@@ -15,6 +15,8 @@ public class SaleItemConfiguration : IEntityTypeConfiguration<SaleItem>
 
         builder.Property(u => u.ProductId).HasColumnType("uuid").HasColumnName("ProductId");
 
+        builder.Property(i => i.Discount).HasColumnName("Discount");
+
         builder.Property(i => i.SaleId).HasColumnType("uuid");
         builder.HasOne(i => i.Sale)
             .WithMany(s => s.Items)

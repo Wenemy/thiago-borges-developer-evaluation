@@ -54,7 +54,7 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
             Quantity = newQuantity;
             Discount = CalculateDiscount(newQuantity, UnitPrice);
         }
-
+       
         public ValidationResultDetail Validate()
         {
             var validator = new SaleItemValidator();

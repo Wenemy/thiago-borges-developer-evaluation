@@ -16,6 +16,8 @@ public class SaleConfiguration : IEntityTypeConfiguration<Sale>
         builder.Property(u => u.CustomerId).HasColumnType("uuid").HasColumnName("CustomerId");
         builder.Property(u => u.BranchId).HasColumnType("uuid").HasColumnName("BranchId");
 
+        builder.Property(u => u.IsCancelled).HasColumnType("boolean").HasColumnName("IsCancelled");
+
         builder.HasMany(u => u.Items)
            .WithOne(i => i.Sale)
            .HasForeignKey(i => i.SaleId)
