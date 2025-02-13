@@ -2,8 +2,10 @@
 using Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
 using Ambev.DeveloperEvaluation.Application.Sales.DeleteSale;
 using Ambev.DeveloperEvaluation.Application.Sales.GetSale;
+using Ambev.DeveloperEvaluation.Application.Sales.GetSalesQuery;
 using Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
 using Ambev.DeveloperEvaluation.Application.Users.GetUser;
+using Ambev.DeveloperEvaluation.Common.Pagination;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CancelSale;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSale;
@@ -14,6 +16,7 @@ using Ambev.DeveloperEvaluation.WebApi.Features.Users.GetUser;
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales;
 
@@ -188,5 +191,18 @@ public class SalesController : BaseController
         var response = await _mediator.Send(command, cancellationToken);
 
         return Ok(_mapper.Map<GetSaleResponse>(response));
+    }
+
+    /// <summary>
+    /// Retrieves a sale paginated
+    /// </summary>
+    /// <param name="query">Query to filter sale</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>The sale details if found</returns>
+    [HttpGet()]
+    [ProducesResponseType(typeof(ApiResponseWithData<PagedResult<GetSaleResult>>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAllPaginated([FromQuery] SaleQueryParams query, CancellationToken cancellationToken)
+    {
+        return Ok(await _mediator.Send(query, cancellationToken));
     }
 }
