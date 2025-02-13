@@ -19,6 +19,36 @@ public static class SaleTestData
         return SaleFake.Generate();
     }
 
+    public static (Sale sale, Dictionary<Guid, int> productQuantities) GenerateValidSaleMultipleDiscountTiers()
+    {
+        var productQuantities = new Dictionary<Guid, int>();
+
+        var sale = GenerateValidSale();
+
+        void AddSaleItem(Guid productId, int quantity, decimal price)
+        {
+            var product = SaleItemTestData.GenerateValidProduct(productId);
+            sale.AddItem(product, quantity, price);
+            productQuantities[productId] = sale.Items.FirstOrDefault(i => i.ProductId == productId)!.Quantity;
+        }
+
+        var product1 = Guid.NewGuid();
+        var product2 = Guid.NewGuid();
+        var product3 = Guid.NewGuid();
+        var product4 = Guid.NewGuid();
+        var product5 = Guid.NewGuid();
+        var product6 = Guid.NewGuid();
+
+        AddSaleItem(product1, 2, 10);
+        AddSaleItem(product2, 3, 20);
+        AddSaleItem(product3, 2, 15);
+        AddSaleItem(product4, 6, 25);
+        AddSaleItem(product5, 10, 30);
+        AddSaleItem(product6, 15, 50);
+        AddSaleItem(product3, 2, 15);
+
+        return (sale, productQuantities);
+    }
 
     public static Customer GenerateValidCustomer()
     {

@@ -1,4 +1,6 @@
-﻿using Ambev.DeveloperEvaluation.Domain.Common;
+﻿using Ambev.DeveloperEvaluation.Common.Validation;
+using Ambev.DeveloperEvaluation.Domain.Common;
+using Ambev.DeveloperEvaluation.Domain.Validation;
 using Ambev.DeveloperEvaluation.Domain.ValueObjects;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -21,8 +23,8 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
             SaleId = saleId;
             ProductId = product.ProductId;
             Product = product;
-            Quantity = quantity > 0 ? quantity : throw new ArgumentException("Quantity must be greater than zero.");
-            UnitPrice = unitPrice > 0 ? unitPrice : throw new ArgumentException("Unit price must be greater than zero.");
+            Quantity = quantity;
+            UnitPrice = unitPrice;
             Discount = CalculateDiscount(quantity, unitPrice);
         }
 
@@ -30,11 +32,6 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
 
         private decimal CalculateDiscount(int quantity, decimal unitPrice)
         {
-            if (quantity > 20)
-            {
-                throw new InvalidOperationException("Cannot sell more than 20 identical items.");
-            }
-
             if (quantity >= 10 && quantity <= 20)
             {
                 return quantity * unitPrice * 0.20m;
@@ -56,6 +53,17 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
 
             Quantity = newQuantity;
             Discount = CalculateDiscount(newQuantity, UnitPrice);
+        }
+
+        public ValidationResultDetail Validate()
+        {
+            var validator = new SaleItemValidator();
+            var result = validator.Validate(this);
+            return new ValidationResultDetail
+            {
+                IsValid = result.IsValid,
+                Errors = result.Errors.Select(o => (ValidationErrorDetail)o)
+            };
         }
     }
 }

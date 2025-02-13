@@ -24,9 +24,11 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
         {
             SaleNumber = saleNumber;
             SaleDate = saleDate;
-            CustomerId = customer.CustomerId;
+            if (customer != null)
+                CustomerId = customer.CustomerId;
             Customer = customer;
-            BranchId = branch.BranchId;
+            if (branch != null)
+                BranchId = branch.BranchId;
             Branch = branch;
             Items = new List<SaleItem>();
             IsCancelled = false;
@@ -46,6 +48,14 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
             {
                 var newItem = new SaleItem(Id, product, quantity, unitPrice);
                 Items.Add(newItem);
+            }
+        }
+
+        public void AddItems(IEnumerable<SaleItem> items)
+        {
+            foreach (var item in items)
+            {
+                AddItem(item.Product, item.Quantity, item.UnitPrice);
             }
         }
 
