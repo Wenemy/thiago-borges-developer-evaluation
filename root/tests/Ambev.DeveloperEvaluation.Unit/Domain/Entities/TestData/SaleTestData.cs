@@ -1,6 +1,8 @@
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.ValueObjects;
 using Bogus;
+using Microsoft.CodeAnalysis;
+using NSubstitute.ReceivedExtensions;
 
 namespace Ambev.DeveloperEvaluation.Unit.Domain.Entities.TestData;
 
@@ -17,6 +19,18 @@ public static class SaleTestData
     public static Sale GenerateValidSale()
     {
         return SaleFake.Generate();
+    }
+
+    public static Sale GenerateValidSaleWithTwoItems()
+    {
+        var sale = SaleFake.Generate();
+        var product1Id = Guid.NewGuid();
+        var product2Id = Guid.NewGuid();
+        var item1 = SaleItemTestData.GenerateValidProduct(product1Id);
+        var item2 = SaleItemTestData.GenerateValidProduct(product2Id);
+        sale.AddItem(item1, 11, 158.9M);
+        sale.AddItem(item2, 2, 22.99M);
+        return sale;
     }
 
     public static (Sale sale, Dictionary<Guid, int> productQuantities) GenerateValidSaleMultipleDiscountTiers()
