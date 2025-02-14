@@ -79,7 +79,7 @@ public class SalesController : BaseController
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error while creating sale");
-            return StatusCode(500, "An error occurred while processing the request.");
+            return StatusCode(500, ex.Message);
         }
     }
 
@@ -123,7 +123,7 @@ public class SalesController : BaseController
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error while updating sale {Id}", id);
-            return StatusCode(500, "An error occurred while processing the request.");
+            return StatusCode(500, ex.Message);
         }
     }
 
@@ -174,7 +174,7 @@ public class SalesController : BaseController
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error while cancelling sale {Id}", id);
-            return StatusCode(500, "An error occurred while processing the request.");
+            return StatusCode(500, ex.Message);
         }
     }
 
@@ -225,7 +225,7 @@ public class SalesController : BaseController
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error while deleting sale {Id}", id);
-            return StatusCode(500, "An error occurred while processing the request.");
+            return StatusCode(500, ex.Message);
         }
     }
 
@@ -270,7 +270,7 @@ public class SalesController : BaseController
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error while retrieving sale {Id}", id);
-            return StatusCode(500, "An error occurred while processing the request.");
+            return StatusCode(500, ex.Message);
         }
     }
 
@@ -296,7 +296,7 @@ public class SalesController : BaseController
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error while retrieving paginated sales");
-            return StatusCode(500, "An error occurred while processing the request.");
+            return StatusCode(500, ex.Message);
         }
     }
 }

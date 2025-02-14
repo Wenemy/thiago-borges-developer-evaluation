@@ -22,6 +22,6 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.UpdateSale
         public DateTime SaleDate { get; set; }
         public Guid CustomerId { get; set; }
         public Guid BranchId { get; set; }
-        public ICollection<UpdateSaleItemCommand> Items { get; set; }
+        public ICollection<UpdateSaleItemCommand> Items { get; set; } = new List<UpdateSaleItemCommand>();
     }
 }

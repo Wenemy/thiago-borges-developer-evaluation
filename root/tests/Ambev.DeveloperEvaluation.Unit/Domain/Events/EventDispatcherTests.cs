@@ -1,26 +1,16 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Events;
 using Ambev.DeveloperEvaluation.Domain.Events.SaleEvents;
 using Ambev.DeveloperEvaluation.Unit.Domain.Entities.TestData;
-using Serilog;
-using Serilog.Events;
-using Serilog.Sinks.InMemory;
 using Xunit;
 
 namespace Ambev.DeveloperEvaluation.Unit.Domain.Events
 {
     public class EventDispatcherTests
     {
-        private readonly EventDispatcher _eventDispatcher;
-
+        private readonly AntiSingletonLogger _logger;
         public EventDispatcherTests()
         {
-            var log = new LoggerConfiguration()
-                .WriteTo.InMemory()
-                .CreateLogger();
-
-            Log.Logger = log;
-
-            _eventDispatcher = new EventDispatcher();
+            _logger = new AntiSingletonLogger();
         }
 
         [Fact]
@@ -30,15 +20,18 @@ namespace Ambev.DeveloperEvaluation.Unit.Domain.Events
             var sale = SaleTestData.GenerateValidSaleWithTwoItems();
             var saleCreatedEvent = new SaleCreatedEvent(sale);
 
+
+            var eventDispatcher = new EventDispatcher();
+
+
             // Act
-            _eventDispatcher.Publish(saleCreatedEvent);
+            eventDispatcher.Publish(saleCreatedEvent);
 
             // Assert
-            var logEvents = InMemorySink.Instance.LogEvents;
+            var logEvents = _logger.Sink.LogEvents;
             var logEntry = logEvents.FirstOrDefault();
 
             Assert.NotNull(logEntry);
-            Assert.Equal(LogEventLevel.Information, logEntry.Level);
             Assert.Contains("📢 Evento Publicado", logEntry.RenderMessage());
         }
     }

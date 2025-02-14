@@ -22,6 +22,17 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
 
         public Sale(string saleNumber, DateTime saleDate, Customer customer, Branch branch)
         {
+            Initialize(saleNumber, saleDate, customer, branch);
+        }
+
+        public Sale(Guid id, string saleNumber, DateTime saleDate, Customer customer, Branch branch)
+        {
+            Id = id;
+            Initialize(saleNumber, saleDate, customer, branch);
+        }
+
+        private void Initialize(string saleNumber, DateTime saleDate, Customer customer, Branch branch)
+        {
             SaleNumber = saleNumber;
             SaleDate = saleDate;
             if (customer != null)
