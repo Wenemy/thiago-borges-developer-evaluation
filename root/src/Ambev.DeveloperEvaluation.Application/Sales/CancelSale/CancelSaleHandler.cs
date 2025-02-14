@@ -1,6 +1,9 @@
-﻿using Ambev.DeveloperEvaluation.Domain.Repositories;
+﻿using Ambev.DeveloperEvaluation.Domain.Events;
+using Ambev.DeveloperEvaluation.Domain.Events.SaleEvents;
+using Ambev.DeveloperEvaluation.Domain.Repositories;
 using FluentValidation;
 using MediatR;
+using Serilog;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.CancelSale;
 
@@ -10,15 +13,18 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.CancelSale;
 public class CancelSaleHandler : IRequestHandler<CancelSaleCommand, CancelSaleResult>
 {
     private readonly ISaleRepository _saleRepository;
+    private readonly IEventDispatcher _eventDispatcher;
 
     /// <summary>
     /// Initializes a new instance of CancelSaleHandler
     /// </summary>
     /// <param name="saleRepository">The sale repository</param>
     /// <param name="validator">The validator for CancelSaleCommand</param>
-    public CancelSaleHandler(ISaleRepository saleRepository)
+    /// <param name="eventDispatcher">The dispatcher of SaleCancelledEvent</param>
+    public CancelSaleHandler(ISaleRepository saleRepository, IEventDispatcher eventDispatcher)
     {
         _saleRepository = saleRepository;
+        _eventDispatcher = eventDispatcher;
     }
 
     /// <summary>
@@ -33,9 +39,19 @@ public class CancelSaleHandler : IRequestHandler<CancelSaleCommand, CancelSaleRe
         var validationResult = await validator.ValidateAsync(command, cancellationToken);
 
         if (!validationResult.IsValid)
+        {
+            Log.Warning("Validation failed for CancelSaleCommand: {@Errors}", validationResult.Errors);
             throw new ValidationException(validationResult.Errors);
+        }
 
         var cancelledSale = await _saleRepository.CancelAsync(command.Id, cancellationToken);
+
+        if (cancelledSale)
+        {
+            _eventDispatcher.Publish(new SaleCancelledEvent(command.Id));
+            Log.Information("Successfully cancelled sale with ID {SaleId}", command.Id);
+        }
+
         return new CancelSaleResult() { Id = command.Id, Cancelled = cancelledSale };
     }
 }
